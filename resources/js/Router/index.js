@@ -2,6 +2,16 @@ import { createWebHistory, createRouter } from "vue-router";
 
 export const routes = [
     {
+        name:'login',
+        path:'/login',
+        component: ()=> import('../Pages/Login.vue')
+    },
+    {
+        name:'register',
+        path:'/register',
+        component: ()=> import('../Pages/Register.vue')
+    },
+    {
         name:'store',
         path:'/store',
         component: ()=> import('../Pages/Store.vue')
