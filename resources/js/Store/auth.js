@@ -1,14 +1,12 @@
 import { defineStore } from "pinia";
 export const useStore = defineStore('auth',{
     state: ()=>({
-        token: '12345678900000',
-        user:null,
-        permistion: 'aaaaasas123456'
+        token:null,
+        user:null
     }),
     getters:{
         get_token:(state)=> state.token,
         get_user:(state)=> state.user,
-        get_pm:(state)=> state.permistion
     },
     actions:{
         set_token(new_token){

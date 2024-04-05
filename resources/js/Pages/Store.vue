@@ -14,7 +14,6 @@ import { useStore } from '../Store/auth';
 export default {
     setup(){
         const store = useStore();
-        const app2 = app2();
         return { store}
     },
     data() {

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('product_id');
             $table->integer('amount');
             $table->integer('price');
-            $table->string('tran_detail');
+            $table->string('tran_detail')->nullable();
             $table->timestamps();
         });
     }
