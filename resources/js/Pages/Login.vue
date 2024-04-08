@@ -31,8 +31,11 @@
                 
               </div>
               <div class="input-group input-group-merge">
-                <input type="password" id="password" v-model="password" class="form-control" name="password" placeholder="············" aria-describedby="password">
-                <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
+                <input :type="show_pass" id="password" v-model="password" @keyup.enter="Login()" class="form-control" name="password" placeholder="············" aria-describedby="password">
+                <span class="input-group-text cursor-pointer" @click="show_pass=='password'?show_pass='text':show_pass='password'" >
+                  <i class="bx bx-hide" v-if="show_pass=='password'" ></i>
+                  <i class="bx bx-show" v-if="show_pass=='text'" ></i>
+                </span>
               </div>
             </div>
 
@@ -43,7 +46,7 @@
         </div>
           
             <div class="mb-3">
-              <button class="btn btn-primary d-grid w-100" type="submit" :disabled="check_form_login" >ເຂົ້າສູ່ລະບົບ</button>
+              <button class="btn btn-primary d-grid w-100" type="submit" @click="Login()" :disabled="check_form_login" >ເຂົ້າສູ່ລະບົບ</button>
             </div>
      
 
@@ -61,6 +64,7 @@
 </div>
 </template>
 <script>
+import axios from 'axios';
 export default {
     data() {
       return {
@@ -108,7 +112,35 @@ export default {
 
 
       }
-    }
+    },
+    methods: {
+      Login(){
+          if(this.email !='' && this.password !=''){
+              axios.post('api/login',{
+                login_email: this.email,
+                login_password: this.password
+              }).then((res)=>{
+                if(res.data.success){
+                  this.email = ''
+                  this.password = ''
+
+                  // ບັນທຶກ Token ແລະ ຂໍ້ມູນຜູ້ໃຊ້ໄວ້ໃນ LocalStorage
+                  localStorage.setItem('web_token',res.data.token);
+                  localStorage.setItem('web_user',JSON.stringify(res.data.user_data));
+
+                  this.$router.push('/');
+
+                  //console.log(res.data)
+
+                } else {
+                  this.check_pass_text = res.data.message;
+                }
+              }).catch((error)=>{
+                console.log(error)
+              })
+          }
+      }
+    },
 }
 </script>
 <style lang="">

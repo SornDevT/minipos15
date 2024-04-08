@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\User;
+use JWTAuth;
 
 class UserController extends Controller
 {
@@ -41,5 +42,56 @@ class UserController extends Controller
         return response()->json($response);
 
             
+    }
+
+    public function login(Request $request){
+
+            $user_login = [
+                'email'=>$request->login_email,
+                'password'=>$request->login_password
+            ];
+
+            $token = JWTAUTH::attempt($user_login); // ກວດຊອບອີເມວລ໌ ແລະ ລະຫັດຜ່ານ
+            $user_data = Auth::user(); // ດຶງຂໍ້ມູນຂອງ User ທີ່ Login ຢູ່ປະຈຸບັນອອກມາ
+
+            if($token){
+
+                $response = [
+                    'success' => true,
+                    'message' => 'ສຳເລັດ!',
+                    'user_data' => $user_data,
+                    'token' => $token
+                ];
+                
+            } else {
+
+                $response = [
+                    'success' => false,
+                    'message' => 'ອີເມວລ໌ ຫຼື ລະຫັດຜ່ານບໍ່ຖຶກຕ້ອງ!'
+                ];
+
+            }
+
+           
+    
+            return response()->json($response);
+    }
+
+    public function logout(){
+        $token = JWTAuth::getToken();
+        $invalidate = JWTAuth::invalidate($token);
+        if($invalidate){
+            $response = [
+                'success' => true,
+                'message' => 'ອອກຈາກລະບົບ ສຳເລັດ!',
+            ];
+        } else {
+            $response = [
+                'success' => false,
+                'message' => 'ອອກຈາກລະບົບ ບໍ່ສຳເລັດ!',
+            ];
+        }
+
+        return response()->json($response);
     }
 }
