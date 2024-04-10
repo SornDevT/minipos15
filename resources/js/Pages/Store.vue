@@ -5,7 +5,7 @@
 
     <div v-if="ShowForm">
         <div class="d-flex justify-content-end">
-            <button class="btn btn-info me-2" :disabled="CheckForm" >ບັນທຶກ</button>
+            <button class="btn btn-info me-2" :disabled="CheckForm" @click="SaveStore()" >ບັນທຶກ</button>
             <button class="btn btn-danger" @click="CancelStore()" >ຍົກເລີກ</button>
         </div>
         <div class="row">
@@ -70,19 +70,19 @@
         <tbody>
           
           
-          <tr>
-            <td>00000</td>
-            <td>Jerry Milton</td>
+          <tr v-for="list in StoreData.data" :key="list.id">
+            <td> {{ list.id }} </td>
+            <td>No</td>
             <td>
-             333333
+             {{ list.name }}
             </td>
-            <td>44444</td>
+            <td> {{ list.price_buy }} </td>
             <td>
               <div class="dropdown">
                 <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="bx bx-dots-vertical-rounded"></i></button>
                 <div class="dropdown-menu">
-                  <a class="dropdown-item text-info" href="javascript:void(0);"><i class="bx bx-edit-alt me-1"></i> ແກ້ໄຂ</a>
-                  <a class="dropdown-item text-danger" href="javascript:void(0);"><i class="bx bx-trash me-1"></i> ລຶບ</a>
+                  <a class="dropdown-item text-info" @click="EditStore(list.id)" href="javascript:void(0);"><i class="bx bx-edit-alt me-1"></i> ແກ້ໄຂ</a>
+                  <a class="dropdown-item text-danger" @click="DelStore(list.id)" href="javascript:void(0);"><i class="bx bx-trash me-1"></i> ລຶບ</a>
                 </div>
               </div>
             </td>
@@ -90,6 +90,7 @@
 
         </tbody>
       </table>
+      <Pagination :pagination="StoreData" :offset="4" @paginate="GetStore($event)" />
     </div>
 
 
@@ -98,6 +99,7 @@
 </template>
 <script>
 import { useStore } from '../Store/auth';
+import axios from 'axios';
 export default {
     setup(){
         const store = useStore();
@@ -113,7 +115,9 @@ export default {
                 amount:'',
                 price_buy:'',
                 price_sell:''
-            }
+            },
+            StoreData:[],
+            EditID:''
         }
     },
     computed:{
@@ -127,25 +131,85 @@ export default {
     },
     methods: {
      AddStore(){
+
+        this.FormStore.name = '';
+        this.FormStore.image = '';
+        this.FormStore.amount = '';
+        this.FormStore.price_buy = '';
+        this.FormStore.price_sell = '';
         this.ShowForm = true;
         this.FormType = true;
      },
-     EditStore(){
-        this.FormType = false;
+     EditStore(id){
+      this.ShowForm = true; /// ສະແດງ Form
+        this.FormType = false; 
+        this.EditID = id;
+
+        axios.get(`api/store/edit/${id}`,{ headers:{ Authorization: 'Bearer '+this.store.get_token } }).then((res)=>{
+
+          this.FormStore = res.data;
+
+        }).catch((error)=>{
+          console.log(error)
+        })
+
      },
      SaveStore(){
             if(this.FormType){
                 /// ເພີ່ມຂໍ້ມູນໃໝ່
+
+              axios.post('api/store/add',this.FormStore, { headers:{ Authorization: 'Bearer '+this.store.get_token } }).then((res)=>{
+
+                if(res.data.success){
+                  this.ShowForm=false;
+                  this.GetStore();
+                }
+
+              }).catch((error)=>{
+                console.log(error)
+              })
                 
             } else {
                 // ອັບເດດຂໍ້ມູນ
+              axios.post(`api/store/update/${this.EditID}`,this.FormStore, { headers:{ Authorization: 'Bearer '+this.store.get_token } }).then((res)=>{
 
+                  if(res.data.success){
+                    this.ShowForm=false;
+                    this.GetStore();
+                  }
+
+                  }).catch((error)=>{
+                  console.log(error)
+                  })
             }
      },
      CancelStore(){
         this.ShowForm = false;
+     },
+     DelStore(id){
+
+      axios.delete(`api/store/delete/${id}`, { headers:{ Authorization: 'Bearer '+this.store.get_token } }).then((res)=>{
+        if(res.data.success){
+          this.GetStore();
+        }
+      }).catch((error)=>{
+        console.log(error)
+      })
+
+     },
+     GetStore(page){
+        axios.get(`api/store?page=${page}`).then((res)=>{
+
+          this.StoreData = res.data;
+
+        }).catch((error)=>{
+          console.log(error);
+        })
      }
     },
+    created(){
+      this.GetStore();
+    }
     
 }
 </script>
