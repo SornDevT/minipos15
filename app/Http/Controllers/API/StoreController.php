@@ -14,10 +14,25 @@ class StoreController extends Controller
 
         // $store = Store::orderBy('id','asc')->get();
         // return $store;
+        // asc ລຽງແຕ່ນ້ອຍຫາໃຫຍ່
+        // desc ລຽງແຕ່ໃຫຍ່ຫານ້ອຍ
 
-        $store = Store::orderBy('id','asc')
-        ->paginate(3)
+        $sort = \Request::get('sort');
+        $perpage = \Request::get('perpage');
+        $search = \Request::get('search');
+
+        $store = Store::orderBy('id',$sort)
+        // ->where('name','LIKE',"%{$search}%")
+        // ->where('price_sell','LIKE',"%{$search}%")
+        ->where(
+            function($query) use ($search){
+                $query->where('name','LIKE',"%{$search}%")
+                ->orWhere('price_buy','LIKE',"%{$search}%");
+            }
+        )
+        ->paginate($perpage)
         ->toArray();
+
         return array_reverse($store);
 
     }
