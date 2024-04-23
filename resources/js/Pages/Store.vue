@@ -9,7 +9,11 @@
             <button class="btn btn-danger" @click="CancelStore()" >ຍົກເລີກ</button>
         </div>
         <div class="row">
-            <div class="col-md-4 text-center">
+            <div class="col-md-4 text-center" style="position: relative;">
+              <button v-if="FormStore.image" type="button" @click="RemoveIMG()" class="btn rounded-pill btn-icon btn-danger" style="position: absolute; top: 0px; right: 30px;">
+                <i class='bx bx-x fs-4'></i>
+              </button>
+
               <img :src="imagePreview" @click="$refs.img_store.click()" class="cursor-pointer" style="width:60%" />
 
               <input type="file" accept="image/png, image/gif, image/jpeg" ref="img_store" style="display:none;" @change="onSelect" >
@@ -81,7 +85,10 @@
           
           <tr v-for="list in StoreData.data" :key="list.id">
             <td> {{ list.id }} </td>
-            <td>No</td>
+            <td>
+            <img v-if="list.image" :src="url+'/assets/img/'+list.image" class="rounded" style="width:60px;" >
+            <img v-else :src="url+'/assets/img/no_image.png'" class="rounded" style="width:60px;" >
+            </td>
             <td>
              {{ list.name }}
             </td>
@@ -117,6 +124,7 @@ export default {
     data() {
         return {
             imagePreview: window.location.origin + '/assets/img/upload_img.png',
+            url: window.location.origin,
             Sort:'asc',
             PerPage: 5,
             Search:'',
@@ -153,6 +161,10 @@ export default {
         }
     },
     methods: {
+      RemoveIMG(){
+            this.FormStore.image = ''
+            this.imagePreview = window.location.origin + '/assets/img/upload_img.png'
+        },
       showAlert() {
       // Use sweetalert2
 
@@ -186,7 +198,9 @@ export default {
     onSelect(event){
 
       console.log(event.target.files[0])
-
+        // if(event.target.files[0].size>1024*1024){
+        //   alert('NO Upload!!')
+        // }
       this.FormStore.image = event.target.files[0];
       // ອ່ານໄຟລ໌ ເພື່ອໄປສະແດງຜົນ
           let reader = new FileReader()
@@ -194,6 +208,35 @@ export default {
             reader.addEventListener("load", function(){
                 this.imagePreview = reader.result
             }.bind(this),false)
+
+
+          // var reader = new FileReader();
+
+    //Read the contents of Image File.
+    // reader.readAsDataURL(event.target.files[0]);
+    // reader.onload = function (e) {
+
+    //   //Initiate the JavaScript Image object.
+    //   var image = new Image();
+
+    //   //Set the Base64 string return from FileReader as source.
+    //   image.src = e.target.result;
+
+    //   //Validate the File Height and Width.
+    //   image.onload = function () {
+        
+    //     var height = this.height;
+    //     var width = this.width;
+    //     console.log('w='+width)
+    //     if (height > 100 || width > 100) {
+    //       alert("Height and Width must not exceed 100px.");
+    //       return false;
+    //     }
+    //     alert("Uploaded image has valid Height and Width.");
+    //     return true;
+    //   };
+    // };
+
 
     },
       ChangeSort(){
@@ -211,6 +254,7 @@ export default {
         this.FormStore.amount = '';
         this.FormStore.price_buy = '';
         this.FormStore.price_sell = '';
+        this.imagePreview = window.location.origin + '/assets/img/upload_img.png'
         this.ShowForm = true;
         this.FormType = true;
      },
@@ -222,6 +266,12 @@ export default {
         axios.get(`api/store/edit/${id}`,{ headers:{ Authorization: 'Bearer '+this.store.get_token } }).then((res)=>{
 
           this.FormStore = res.data;
+          if(res.data.image){
+            this.imagePreview = window.location.origin + '/assets/img/'+ res.data.image;
+          } else{
+            this.imagePreview = window.location.origin + '/assets/img/upload_img.png'
+          }
+          
 
         }).catch((error)=>{
           console.log(error)
@@ -232,7 +282,7 @@ export default {
             if(this.FormType){
                 /// ເພີ່ມຂໍ້ມູນໃໝ່
 
-              axios.post('api/store/add',this.FormStore, { headers:{ Authorization: 'Bearer '+this.store.get_token } }).then((res)=>{
+              axios.post('api/store/add',this.FormStore, { headers:{ "Content-Type":"multipart/form-data" ,Authorization: 'Bearer '+this.store.get_token } }).then((res)=>{
 
                 if(res.data.success){
                   this.ShowForm=false;
@@ -261,7 +311,7 @@ export default {
                 
             } else {
                 // ອັບເດດຂໍ້ມູນ
-              axios.post(`api/store/update/${this.EditID}`,this.FormStore, { headers:{ Authorization: 'Bearer '+this.store.get_token } }).then((res)=>{
+              axios.post(`api/store/update/${this.EditID}`,this.FormStore, { headers:{ "Content-Type":"multipart/form-data" ,Authorization: 'Bearer '+this.store.get_token } }).then((res)=>{
 
                   if(res.data.success){
                           this.ShowForm=false;
@@ -337,12 +387,21 @@ export default {
       
      },
      GetStore(page){
-        axios.get(`api/store?page=${page}&sort=${this.Sort}&perpage=${this.PerPage}&search=${this.Search}`).then((res)=>{
+        axios.get(`api/store?page=${page}&sort=${this.Sort}&perpage=${this.PerPage}&search=${this.Search}`, { headers:{ Authorization: 'Bearer '+this.store.get_token } }).then((res)=>{
 
           this.StoreData = res.data;
 
         }).catch((error)=>{
-          console.log(error);
+          console.log(error.response.status);
+          if(error.response.status){
+
+            this.store.remove_token()
+            this.store.remove_user()
+            localStorage.removeItem("web_token")
+            localStorage.removeItem("web_user")
+            this.$router.push("/login")
+            
+          }
         })
      }
     },

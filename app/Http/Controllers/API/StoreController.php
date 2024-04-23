@@ -10,6 +10,10 @@ class StoreController extends Controller
 {
     //
 
+    public function __construct(){
+        $this->middleware('auth:api');
+    }
+
     public function index(){
 
         // $store = Store::orderBy('id','asc')->get();
@@ -40,9 +44,23 @@ class StoreController extends Controller
     public function add(Request $request){
         try {
 
+            // ເສັ້ນທາງບັນທຶກຮູບພາບ
+            $upload_path = "assets/img";
+
+            if($request->file('image')){
+                // ສ້າງຊື່ຮູບພາບໃໝ່
+                $new_name_img = time().".".$request->image->getClientOriginalExtension();
+
+                // ອັບໂຫຼດ
+                $request->image->move(public_path($upload_path),$new_name_img);
+            } else {
+                $new_name_img = '';
+            }
+
+
             $store = new Store([
                 'name' => $request->name,
-                // 'image' => ,
+                'image' => $new_name_img,
                 'amount' => $request->amount,
                 'price_buy' => $request->price_buy,
                 'price_sell' => $request->price_sell,
@@ -81,13 +99,69 @@ class StoreController extends Controller
 
             $store = Store::find($id);
             
-            $store->update([
-                'name' => $request->name,
-                // 'image' => ,
-                'amount' => $request->amount,
-                'price_buy' => $request->price_buy,
-                'price_sell' => $request->price_sell,
-            ]);
+            // ເສັ້ນທາງບັນທຶກຮູບພາບ
+            $upload_path = "assets/img";
+
+            if($request->file('image')){
+
+                // ລຶຶບຂໍ້ມູນເກົ້າອອກ
+                if($store->img){
+                    if(file_exists($upload_path."/".$store->img)){
+                        unlink($upload_path."/".$store->img);
+                    }
+                }
+
+                
+
+                // ສ້າງຊື່ຮູບພາບໃໝ່
+                $new_name_img = time().".".$request->image->getClientOriginalExtension();
+
+                // ອັບໂຫຼດ
+                $request->image->move(public_path($upload_path),$new_name_img);
+
+                $store->update([
+                    'name' => $request->name,
+                    'image' => $new_name_img ,
+                    'amount' => $request->amount,
+                    'price_buy' => $request->price_buy,
+                    'price_sell' => $request->price_sell,
+                ]);
+
+            } else {
+
+                if($request->image){
+                    $store->update([
+                        'name' => $request->name,
+                        // 'image' => ,
+                        'amount' => $request->amount,
+                        'price_buy' => $request->price_buy,
+                        'price_sell' => $request->price_sell,
+                    ]);
+                } else {
+
+                    // ລຶຶບຂໍ້ມູນເກົ້າອອກ
+                if($store->image){
+                            if(file_exists($upload_path."/".$store->image)){
+                                unlink($upload_path."/".$store->image);
+                            }
+                        }
+
+                        $store->update([
+                            'name' => $request->name,
+                            'image' => '',
+                            'amount' => $request->amount,
+                            'price_buy' => $request->price_buy,
+                            'price_sell' => $request->price_sell,
+                        ]);
+
+                }
+
+              
+            }
+ 
+
+
+            
 
             $success = true;
             $message = 'ອັບເດດຂໍ້ມູນ ສຳເລັດ!';
