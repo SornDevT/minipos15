@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\StoreController;
+use App\Http\Controllers\API\TransectionController;
+use App\Http\Controllers\API\BillController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,3 +33,16 @@ Route::controller(StoreController::class)->group(function (){
     Route::post('store/update/{id}','update');
     Route::delete('store/delete/{id}','delete');
 });
+
+Route::controller(TransectionController::class)->group(function (){
+    // Route::get('transection','index');
+    // Route::get('transection/edit/{id}','edit');
+    Route::post('transection/add','add');
+    // Route::post('transection/update/{id}','update');
+    // Route::delete('transection/delete/{id}','delete');
+});
+
+Route::controller(BillController::class)->group(function (){
+    Route::get('bills/print/{id}','print_bill');
+});
+
