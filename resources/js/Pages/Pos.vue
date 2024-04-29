@@ -228,6 +228,16 @@ export default {
                     timer: 3500
                     });
                 }
+            }).catch((error)=>{
+                if(error){
+            if(error.response.status == 401){
+              this.store.remove_token()
+              this.store.remove_user()
+              localStorage.removeItem("web_token")
+              localStorage.removeItem("web_user")
+              this.$router.push("/login")
+              }
+          }
             })
         },
         AddNum(num){
@@ -298,15 +308,15 @@ export default {
 
                 }).catch((error)=>{
                 console.log(error.response.status);
-                if(error.response.status){
-
-                this.store.remove_token()
-                this.store.remove_user()
-                localStorage.removeItem("web_token")
-                localStorage.removeItem("web_user")
-                this.$router.push("/login")
-                
-                }
+                if(error){
+            if(error.response.status == 401){
+              this.store.remove_token()
+              this.store.remove_user()
+              localStorage.removeItem("web_token")
+              localStorage.removeItem("web_user")
+              this.$router.push("/login")
+              }
+          }
                 })
         }
     },

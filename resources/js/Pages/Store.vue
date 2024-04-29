@@ -76,6 +76,7 @@
             <th>ID</th>
             <th>ຮູບພາບ</th>
             <th>ຊື່ສິນຄ້າ</th>
+            <th class="text-center">ຈຳນວນ</th>
             <th>ລາຄາຊື້</th>
             <th>ຈັດການ</th>
           </tr>
@@ -89,8 +90,11 @@
             <img v-if="list.image" :src="url+'/assets/img/'+list.image" class="rounded" style="width:60px;" >
             <img v-else :src="url+'/assets/img/no_image.png'" class="rounded" style="width:60px;" >
             </td>
-            <td>
+            <td >
              {{ list.name }}
+            </td>
+            <td class="text-center">
+             {{ list.amount }}
             </td>
             <td class="text-end"> {{ formatPrice(list.price_buy) }} ກີບ </td>
             <td>
@@ -125,7 +129,7 @@ export default {
         return {
             imagePreview: window.location.origin + '/assets/img/upload_img.png',
             url: window.location.origin,
-            Sort:'asc',
+            Sort:'desc',
             PerPage: 5,
             Search:'',
             ShowForm:false,
@@ -279,6 +283,15 @@ export default {
 
         }).catch((error)=>{
           console.log(error)
+          if(error){
+            if(error.response.status == 401){
+              this.store.remove_token()
+              this.store.remove_user()
+              localStorage.removeItem("web_token")
+              localStorage.removeItem("web_user")
+              this.$router.push("/login")
+              }
+          }
         })
 
      },
@@ -311,6 +324,15 @@ export default {
 
               }).catch((error)=>{
                 console.log(error)
+                if(error){
+            if(error.response.status == 401){
+              this.store.remove_token()
+              this.store.remove_user()
+              localStorage.removeItem("web_token")
+              localStorage.removeItem("web_user")
+              this.$router.push("/login")
+              }
+          }
               })
                 
             } else {
@@ -341,6 +363,15 @@ export default {
 
                   }).catch((error)=>{
                   console.log(error)
+                  if(error){
+            if(error.response.status == 401){
+              this.store.remove_token()
+              this.store.remove_user()
+              localStorage.removeItem("web_token")
+              localStorage.removeItem("web_user")
+              this.$router.push("/login")
+              }
+          }
                   })
             }
      },
@@ -383,6 +414,15 @@ export default {
               }
             }).catch((error)=>{
               console.log(error)
+              if(error){
+            if(error.response.status == 401){
+              this.store.remove_token()
+              this.store.remove_user()
+              localStorage.removeItem("web_token")
+              localStorage.removeItem("web_user")
+              this.$router.push("/login")
+              }
+          }
             })
 
           }
@@ -397,15 +437,16 @@ export default {
 
         }).catch((error)=>{
           console.log(error.response.status);
-          if(error.response.status){
-
-            this.store.remove_token()
-            this.store.remove_user()
-            localStorage.removeItem("web_token")
-            localStorage.removeItem("web_user")
-            this.$router.push("/login")
-            
+          if(error){
+            if(error.response.status == 401){
+              this.store.remove_token()
+              this.store.remove_user()
+              localStorage.removeItem("web_token")
+              localStorage.removeItem("web_user")
+              this.$router.push("/login")
+              }
           }
+          
         })
      }
     },
