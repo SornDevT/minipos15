@@ -18,7 +18,6 @@ return new class extends Migration
             $table->integer('amount');
             $table->integer('price_buy');
             $table->integer('price_sell');
-            $table->string('status');
             $table->timestamps();
         });
     }

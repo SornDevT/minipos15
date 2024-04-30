@@ -19,7 +19,7 @@
               <input type="file" accept="image/png, image/gif, image/jpeg" ref="img_store" style="display:none;" @change="onSelect" >
             </div>
             <div class="col-md-8">
-                    {{ FormStore }}
+                    <!-- {{ FormStore }} -->
                     <div class="mb-2"> 
                         <label for="p-name" class="form-label fs-6">ຊື່ສິນຄ້າ:</label>
                         <input type="text" v-model="FormStore.name" class="form-control" id="p-name" placeholder="..." >
@@ -69,7 +69,7 @@
                 <button class="btn btn-primary" @click="AddStore()">ເພີ່ມໃໝ່</button>
             </div>
         </div>
-        <button @click="showAlert">Hello world</button>
+        
       <table class="table table-bordered">
         <thead>
           <tr>

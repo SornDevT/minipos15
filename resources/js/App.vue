@@ -80,7 +80,7 @@
           <li class="nav-item navbar-dropdown dropdown-user dropdown">
             <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
               <div class="avatar avatar-online">
-                <img src="assets/img/avatars/1.png" alt="" class="w-px-40 h-auto rounded-circle">
+                <img :src="url+'/assets/img/avatars/1.png'" alt="" class="w-px-40 h-auto rounded-circle">
               </div>
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
@@ -89,7 +89,7 @@
                   <div class="d-flex">
                     <div class="flex-shrink-0 me-3">
                       <div class="avatar avatar-online">
-                        <img src="assets/img/avatars/1.png" alt="" class="w-px-40 h-auto rounded-circle">
+                        <img :src="url+'/assets/img/avatars/1.png'" alt="" class="w-px-40 h-auto rounded-circle">
                       </div>
                     </div>
                     <div class="flex-grow-1">
@@ -165,14 +165,13 @@
           <!-- / Content -->
 
           
-          
 
 <!-- Footer -->
 <footer v-if="store.get_token" class="content-footer footer bg-footer-theme"> 
   <div class="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
     <div class="mb-2 mb-md-0">
     
-      , made with ❤️ by <a href="https://themeselection.com" target="_blank" class="footer-link fw-medium">ThemeSelection</a>
+      MiniPos15 Develop By SornDev
     </div>
     <div class="d-none d-lg-inline-block">
       
@@ -217,6 +216,11 @@ export default {
   setup() {
     const store = useStore();
     return { store }
+  },
+  data() {
+    return {
+      url: window.location.origin,
+    }
   },
   methods: {
     LogOut(){
