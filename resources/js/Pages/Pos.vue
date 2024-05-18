@@ -32,42 +32,59 @@
         </div>
         <div class="col-md-4">
             <div class="card">
-                <div class="card-body">
-                    <label> ຊື່ລູກຄ້າ: </label>
-                    <input type="text" class="form-control mb-1" v-model="customer_name" placeholder="...">
-                    <label> ເບີໂທ: </label>
-                    <input type="text" class="form-control" v-model="customer_tel" placeholder="...">
-                    <hr>
-                    <div class=" d-flex justify-content-between text-info fs-5 fw-bold">
-                        <span>ລວມຍອດເງິນ:</span>
-                        <span>{{ formatPrice(TotalAmount) }} ກີບ</span>
+                <div class="card-body p-0">
+                    <div class="p-3">
+                        <label> ຊື່ລູກຄ້າ: </label>
+                        <input type="text" class="form-control mb-1" v-model="customer_name" placeholder="...">
+                        <label> ເບີໂທ: </label>
+                        <input type="text" class="form-control" v-model="customer_tel" placeholder="...">
+                        
                     </div>
-                    <button type="button" class="btn rounded-pill btn-info w-100" :disabled="!TotalAmount" @click="Pay()" >ຊຳລ່ະເງິນ</button>
+                    <div class=" bg-info p-2 text-white ">
+                        ລາຍການສັ່ງຊື້
+                    </div>
                     <PerfectScrollbar>
                         <!-- {{ListOrder}} -->
-                    <div class="mt-2" style="height:43vh">
+                    <div class="" style="height:42vh">
                         <div class="table-responsive text-nowrap">
-                        <table class="table table-bordered">
-                            <thead>
-                            <tr>
-                                <th>ລາຍລະອຽດ</th>
-                                <th>ລາຄາ</th>
-                                <th>ລາຄາລວມ</th>
-                            </tr>
-                            </thead>
+                        <table class="table">
+                            
                             <tbody>
                             <tr  v-for="list in ListOrder" :key="list.id">
-                                <td>{{ list.name }}</td>
+                                <td class=" d-flex p-1 ">
+                                    <img :src="url + '/assets/img/'+list.image" v-if="list.image" class=" rounded img-pos-list border me-2" >
+                                    <img :src="url + '/assets/img/no_image.png'" v-else class=" rounded img-pos-list border me-2" >
+                                    <div class=" d-flex flex-column w-100 px-2">
+                                        <span>{{ list.name }} </span>
+                                        <div class=" d-flex justify-content-end">
+                                            {{ formatPrice(list.price_sell) }} x {{ formatPrice(list.order_amount) }}
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <span><i class='bx bxs-no-entry text-warning cursor-pointer' @click="RemoveProduct(list.id)"></i>  {{list.order_amount}} <i class='bx bxs-plus-circle text-info cursor-pointer' @click="AddProduct(list.id)"></i> | <i class='bx bxs-x-circle text-danger cursor-pointer' @click="DeleteProduct(list.id)"></i></span>
+                                            <span>{{ formatPrice(list.price_sell*list.order_amount) }}</span>
+                                        </div>
+                                    </div>
+                                    
+
+                                </td>
+                                <!-- <td>{{ list.name }} {{ list.image }}</td>
                                 <td class="text-end">{{ formatPrice(list.price_sell) }}<br>
                                     <i class='bx bxs-no-entry text-warning cursor-pointer' @click="RemoveProduct(list.id)"></i>  {{list.order_amount}} <i class='bx bxs-plus-circle text-info cursor-pointer' @click="AddProduct(list.id)"></i> | <i class='bx bxs-x-circle text-danger cursor-pointer' @click="DeleteProduct(list.id)"></i>
                                 </td >
-                                <td class="text-end">{{ formatPrice(list.price_sell*list.order_amount) }}</td>
+                                <td class="text-end">{{ formatPrice(list.price_sell*list.order_amount) }}</td> -->
                             </tr>
                             </tbody>
                         </table>
                         </div>
                     </div>
                 </PerfectScrollbar>
+                    <div class=" d-flex justify-content-between bg-info text-white fs-5 p-2">
+                        <span>ລວມຍອດເງິນ:</span>
+                        <span>{{ formatPrice(TotalAmount) }} ກີບ</span>
+                    </div>
+                    <div class="p-2">
+                        <button type="button" class="btn rounded-pill btn-info w-100" :disabled="!TotalAmount" @click="Pay()" >ຊຳລ່ະເງິນ</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -81,61 +98,39 @@
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                  <div class=" d-flex justify-content-between">
-                    <span>ລວມຍອດເງິນ:</span>
-                    <span>{{ formatPrice(TotalAmount) }} ກີບ</span>
-                  </div>
-                  <div class=" d-flex justify-content-between">
-                    <span>ຮັບເງິນນຳລູກຄ້າ:</span>
-                    <span>{{ formatPrice(CashAmount) }} ກີບ</span>
-                  </div>
-                  <div class=" d-flex justify-content-between text-danger" v-if="(CashAmount-TotalAmount)>0">
-                    <span>ເງິນທອນ:</span>
-                    <span>{{ formatPrice(CashAmount - TotalAmount) }} ກີບ</span>
-                  </div>
-
-                  <div class=" d-flex justify-content-center">
-                    <div class="row" style=" width: 250px; ">
-                <div class=" col-md-4 mt-2">
-                    <button class="btn btn-primary" style=" width: 60px;" @click="AddNum('1')" >1</button>
-                </div>
-                <div class=" col-md-4 mt-2">
-                    <button class="btn btn-primary" style=" width: 60px;" @click="AddNum('2')" >2</button>
-                </div>
-                <div class=" col-md-4 mt-2"> 
-                    <button class="btn btn-primary" style=" width: 60px;" @click="AddNum('3')" >3</button>
-                </div>
-                <div class=" col-md-4 mt-2">
-                    <button class="btn btn-primary" style=" width: 60px;" @click="AddNum('4')" >4</button>
-                </div>
-                <div class=" col-md-4 mt-2">
-                    <button class="btn btn-primary" style=" width: 60px;" @click="AddNum('5')" >5</button>
-                </div>
-                <div class=" col-md-4 mt-2">
-                    <button class="btn btn-primary" style=" width: 60px;" @click="AddNum('6')" >6</button>
-                </div>
-                <div class=" col-md-4 mt-2">
-                    <button class="btn btn-primary" style=" width: 60px;" @click="AddNum('7')" >7</button>
-                </div>
-                <div class=" col-md-4 mt-2">
-                    <button class="btn btn-primary" style=" width: 60px;" @click="AddNum('8')" >8</button>
-                </div>
-                <div class=" col-md-4 mt-2">
-                    <button class="btn btn-primary" style=" width: 60px;" @click="AddNum('9')" >9</button>
-                </div>
-                <div class=" col-md-4 mt-2">
-                    <button class="btn btn-primary" style=" width: 60px;" @click="AddNum('00')" >00</button>
-                </div>
-                <div class=" col-md-4 mt-2">
-                    <button class="btn btn-primary" style=" width: 60px;" @click="AddNum('0')" >0</button>
-                </div>
-                <div class=" col-md-4 mt-2">
-                    <button class="btn btn-danger" style=" width: 60px;" @click="AddNum('-')" ><i class='bx bx-left-arrow-alt'></i></button>
-                </div>
-
-
-            </div>
-                  </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class=" d-flex justify-content-between">
+                                <span>ລວມຍອດເງິນ:</span> 
+                                <span>{{ formatPrice(TotalAmount) }} ກີບ</span>
+                            </div>
+                            <div class=" d-flex justify-content-between text-danger" v-if="(CashAmount-TotalAmount)>0">
+                                <span>ເງິນທອນ:</span>
+                                <span>{{ formatPrice(CashAmount - TotalAmount) }} ກີບ</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="fs-6">ຮັບເງິນນຳລູກຄ້າ</label>
+                            <cleave :options="options" class=" form-control text-end" v-model="CashAmount" />
+                            <div class="row mt-2">
+                                <div class="col-md-6 text-center"><button type="button" class="btn btn-primary w-100" @click="AddNum(500)">500</button></div>
+                                <div class="col-md-6 text-center"><button type="button" class="btn btn-primary w-100" @click="AddNum(1000)">10.000</button></div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-6 text-center"><button type="button" class="btn btn-primary w-100"  @click="AddNum(1000)">1.000</button></div>
+                                <div class="col-md-6 text-center"><button type="button" class="btn btn-primary w-100" @click="AddNum(20000)">20.000</button></div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-6 text-center"><button type="button" class="btn btn-primary w-100"  @click="AddNum(2000)">2.000</button></div>
+                                <div class="col-md-6 text-center"><button type="button" class="btn btn-primary w-100"  @click="AddNum(50000)">50.000</button></div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-6 text-center"><button type="button" class="btn btn-primary w-100"  @click="AddNum(5000)">5.000</button></div>
+                                <div class="col-md-6 text-center"><button type="button" class="btn btn-primary w-100"  @click="AddNum(100000)">100.000</button></div>
+                            </div>
+                        </div>
+                    </div>
+                 
 
                 </div>
                 <div class="modal-footer">
@@ -166,7 +161,17 @@ export default {
             Search:'',
             CashAmount:0,
             customer_name:'',
-            customer_tel:''
+            customer_tel:'',
+            options: {
+                  numeral: true,
+                  numeralPositiveOnly: true,
+                  noImmediatePrefix: true,
+                  rawValueTrimPrefix: true,
+                  numeralIntegerScale: 10,
+                  numeralDecimalScale: 2,
+                  numeralDecimalMark: ',',
+                  delimiter: '.'
+                }
         }
     },
     computed:{
@@ -244,7 +249,7 @@ export default {
             if(num == '-'){
                 this.CashAmount = this.CashAmount.slice(0,-1); // ລົບຈາກຂວາມື ຕົວຢ່າງ:  120 = 12
             } else {
-                this.CashAmount = this.CashAmount + num; // 1 + 2 = 12 Not 3
+                this.CashAmount = parseInt(this.CashAmount?this.CashAmount:0) + parseInt(num); // 1 + 2 = 12 Not 3
             }
         },
         AddProduct(id){
@@ -272,6 +277,7 @@ export default {
                     } else {
                         this.ListOrder.push({
                         id: item.id,
+                        image: item.image,
                         name: item.name,
                         order_amount: 1,
                         price_sell: item.price_sell
@@ -346,5 +352,13 @@ export default {
     padding: 5px;
     right: 0px;
     border-radius: 0px 10px;
+    }
+
+    .img-pos-list{
+        width: 110px;
+    height: 70px;
+    border-radius: 5px;
+    object-fit: cover;
+    object-position: center;
     }
 </style>
